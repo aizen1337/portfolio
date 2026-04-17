@@ -1,0 +1,209 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
+import {
+  projects,
+  services,
+  siteSettings,
+  testimonials,
+} from "@/db/schema";
+import { requireDatabase, updateInquiryStatus } from "@/lib/data";
+import { requireAdmin } from "@/lib/admin";
+import type { InquiryStatus, LocalizedList, LocalizedText, SocialLink } from "@/lib/types";
+
+function textValue(formData: FormData, key: string) {
+  return String(formData.get(key) ?? "").trim();
+}
+
+function checkboxValue(formData: FormData, key: string) {
+  return formData.get(key) === "on";
+}
+
+function numberValue(formData: FormData, key: string) {
+  return Number.parseInt(String(formData.get(key) ?? "0"), 10) || 0;
+}
+
+function parseCsv(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseLines(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function localizedText(formData: FormData, prefix: string): LocalizedText {
+  return {
+    en: textValue(formData, `${prefix}En`),
+    pl: textValue(formData, `${prefix}Pl`),
+  };
+}
+
+function localizedList(formData: FormData, prefix: string): LocalizedList {
+  return {
+    en: parseLines(textValue(formData, `${prefix}En`)),
+    pl: parseLines(textValue(formData, `${prefix}Pl`)),
+  };
+}
+
+function revalidateAll() {
+  revalidatePath("/admin");
+  revalidatePath("/en");
+  revalidatePath("/en/projects");
+  revalidatePath("/en/services");
+  revalidatePath("/en/employers");
+  revalidatePath("/en/contact");
+  revalidatePath("/pl");
+  revalidatePath("/pl/projects");
+  revalidatePath("/pl/services");
+  revalidatePath("/pl/employers");
+  revalidatePath("/pl/contact");
+}
+
+export async function saveProjectAction(formData: FormData) {
+  await requireAdmin();
+  const db = requireDatabase();
+  const id = textValue(formData, "id");
+  const values = {
+    slug: textValue(formData, "slug"),
+    featured: checkboxValue(formData, "featured"),
+    sortOrder: numberValue(formData, "sortOrder"),
+    title: localizedText(formData, "title"),
+    summary: localizedText(formData, "summary"),
+    overview: localizedText(formData, "overview"),
+    challenge: localizedText(formData, "challenge"),
+    approach: localizedText(formData, "approach"),
+    outcome: localizedText(formData, "outcome"),
+    role: localizedText(formData, "role"),
+    tags: parseCsv(textValue(formData, "tags")),
+    stack: parseCsv(textValue(formData, "stack")),
+    coverImage: textValue(formData, "coverImage"),
+    gallery: parseLines(textValue(formData, "gallery")),
+    repository: textValue(formData, "repository") || null,
+    liveUrl: textValue(formData, "liveUrl") || null,
+    demoUrl: textValue(formData, "demoUrl") || null,
+  };
+
+  if (id) {
+    await db.update(projects).set(values).where(eq(projects.id, id));
+  } else {
+    await db.insert(projects).values(values);
+  }
+
+  revalidateAll();
+}
+
+export async function deleteProjectAction(formData: FormData) {
+  await requireAdmin();
+  await requireDatabase()
+    .delete(projects)
+    .where(eq(projects.id, textValue(formData, "id")));
+  revalidateAll();
+}
+
+export async function saveServiceAction(formData: FormData) {
+  await requireAdmin();
+  const db = requireDatabase();
+  const id = textValue(formData, "id");
+  const values = {
+    slug: textValue(formData, "slug"),
+    icon: textValue(formData, "icon") || "Sparkles",
+    sortOrder: numberValue(formData, "sortOrder"),
+    title: localizedText(formData, "title"),
+    summary: localizedText(formData, "summary"),
+    outcomes: localizedList(formData, "outcomes"),
+    process: localizedList(formData, "process"),
+    ctaLabel: localizedText(formData, "ctaLabel"),
+  };
+
+  if (id) {
+    await db.update(services).set(values).where(eq(services.id, id));
+  } else {
+    await db.insert(services).values(values);
+  }
+
+  revalidateAll();
+}
+
+export async function deleteServiceAction(formData: FormData) {
+  await requireAdmin();
+  await requireDatabase()
+    .delete(services)
+    .where(eq(services.id, textValue(formData, "id")));
+  revalidateAll();
+}
+
+export async function saveTestimonialAction(formData: FormData) {
+  await requireAdmin();
+  const db = requireDatabase();
+  const id = textValue(formData, "id");
+  const values = {
+    sortOrder: numberValue(formData, "sortOrder"),
+    name: textValue(formData, "name"),
+    role: textValue(formData, "role"),
+    company: textValue(formData, "company"),
+    avatarUrl: textValue(formData, "avatarUrl"),
+    quote: localizedText(formData, "quote"),
+  };
+
+  if (id) {
+    await db.update(testimonials).set(values).where(eq(testimonials.id, id));
+  } else {
+    await db.insert(testimonials).values(values);
+  }
+
+  revalidateAll();
+}
+
+export async function deleteTestimonialAction(formData: FormData) {
+  await requireAdmin();
+  await requireDatabase()
+    .delete(testimonials)
+    .where(eq(testimonials.id, textValue(formData, "id")));
+  revalidateAll();
+}
+
+export async function saveSettingsAction(formData: FormData) {
+  await requireAdmin();
+  const values = {
+    id: "main",
+    heroEyebrow: localizedText(formData, "heroEyebrow"),
+    heroTitle: localizedText(formData, "heroTitle"),
+    heroBody: localizedText(formData, "heroBody"),
+    aboutBody: localizedText(formData, "aboutBody"),
+    employerIntro: localizedText(formData, "employerIntro"),
+    servicesIntro: localizedText(formData, "servicesIntro"),
+    contactIntro: localizedText(formData, "contactIntro"),
+    socialLinks: parseLines(textValue(formData, "socialLinks")).map((item) => {
+      const [label, href] = item.split("|").map((part) => part.trim());
+      return { label, href } satisfies SocialLink;
+    }),
+    contactEmail: textValue(formData, "contactEmail"),
+    calendlyUrl: textValue(formData, "calendlyUrl") || null,
+    resumeUrl: textValue(formData, "resumeUrl") || null,
+  };
+
+  await requireDatabase()
+    .insert(siteSettings)
+    .values(values)
+    .onConflictDoUpdate({
+      target: siteSettings.id,
+      set: values,
+    });
+
+  revalidateAll();
+}
+
+export async function updateInquiryStatusAction(formData: FormData) {
+  await requireAdmin();
+  const id = textValue(formData, "id");
+  const status = textValue(formData, "status") as InquiryStatus;
+  await updateInquiryStatus(id, status);
+  revalidatePath("/admin");
+}

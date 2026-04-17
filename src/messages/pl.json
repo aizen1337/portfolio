@@ -1,0 +1,45 @@
+{
+  "nav": {
+    "home": "Start",
+    "projects": "Projekty",
+    "services": "Usługi",
+    "employers": "Dla pracodawców",
+    "contact": "Kontakt",
+    "admin": "Panel"
+  },
+  "common": {
+    "featured": "Wybrane",
+    "viewCaseStudy": "Zobacz case study",
+    "allProjects": "Wszystkie projekty",
+    "bookCall": "Umów rozmowę",
+    "sendInquiry": "Wyślij zapytanie",
+    "resume": "CV",
+    "language": "Język",
+    "loading": "Ładowanie..."
+  },
+  "contact": {
+    "title": "Zacznijmy rozmowę",
+    "description": "Napisz, kogo szukasz albo co chcesz zbudować. Odpowiem z konkretną propozycją kolejnego kroku.",
+    "name": "Imię",
+    "email": "E-mail",
+    "company": "Firma",
+    "message": "Wiadomość",
+    "projectType": "Typ projektu",
+    "budgetRange": "Budżet",
+    "timeline": "Termin",
+    "wantsCall": "Chcę umówić rozmowę",
+    "employer": "Zapytanie rekrutacyjne",
+    "client": "Zapytanie klienta",
+    "submit": "Wyślij wiadomość",
+    "success": "Dzięki. Wiadomość została wysłana i odezwę się wkrótce.",
+    "error": "Nie udało się teraz wysłać formularza. Spróbuj ponownie za chwilę.",
+    "callCta": "Wybierz termin w kalendarzu"
+  },
+  "admin": {
+    "title": "CMS portfolio",
+    "description": "Zarządzaj treścią strony, leadami i ustawieniami.",
+    "signIn": "Zaloguj przez GitHub",
+    "signOut": "Wyloguj",
+    "notConfigured": "Autoryzacja panelu nie jest jeszcze skonfigurowana. Dodaj zmienne środowiskowe GitHub i NextAuth."
+  }
+}

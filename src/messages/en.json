@@ -1,0 +1,45 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "services": "Services",
+    "employers": "Employers",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "common": {
+    "featured": "Featured",
+    "viewCaseStudy": "View case study",
+    "allProjects": "All projects",
+    "bookCall": "Book a call",
+    "sendInquiry": "Send inquiry",
+    "resume": "Resume",
+    "language": "Language",
+    "loading": "Loading..."
+  },
+  "contact": {
+    "title": "Start the conversation",
+    "description": "Share what you're hiring for or what you're building. I will get back to you with a thoughtful next step.",
+    "name": "Name",
+    "email": "Email",
+    "company": "Company",
+    "message": "Message",
+    "projectType": "Project type",
+    "budgetRange": "Budget range",
+    "timeline": "Timeline",
+    "wantsCall": "I'd like to book a call",
+    "employer": "Employer inquiry",
+    "client": "Client inquiry",
+    "submit": "Send message",
+    "success": "Thanks. Your message is in and I'll follow up soon.",
+    "error": "I couldn't submit the form right now. Please try again in a moment.",
+    "callCta": "Pick a time on the calendar"
+  },
+  "admin": {
+    "title": "Portfolio CMS",
+    "description": "Manage your public content, leads, and settings.",
+    "signIn": "Continue with GitHub",
+    "signOut": "Sign out",
+    "notConfigured": "Admin auth is not configured yet. Add GitHub and NextAuth environment variables to enable sign-in."
+  }
+}
