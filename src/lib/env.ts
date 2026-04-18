@@ -1,3 +1,19 @@
+export function isDevelopmentAdminBypassEnabled() {
+  if (process.env.NODE_ENV !== "development") {
+    return false;
+  }
+
+  return process.env.DEV_MOCK_GITHUB_LOGIN !== "false";
+}
+
+export function getDevelopmentAdminLogin() {
+  return process.env.DEV_MOCK_GITHUB_LOGIN?.trim() || "dev-admin";
+}
+
+export function getDevelopmentAdminEmail() {
+  return process.env.DEV_MOCK_GITHUB_EMAIL?.trim() || "dev-admin@local.test";
+}
+
 export function isDatabaseConfigured() {
   return Boolean(process.env.DATABASE_URL);
 }
@@ -7,6 +23,10 @@ export function isBlobConfigured() {
 }
 
 export function isAuthConfigured() {
+  if (isDevelopmentAdminBypassEnabled()) {
+    return true;
+  }
+
   return Boolean(
     process.env.GITHUB_ID &&
       process.env.GITHUB_SECRET &&

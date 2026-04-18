@@ -23,6 +23,7 @@ import type {
   InquiryStatus,
   MediaAsset,
   Project,
+  ProjectGalleryItem,
   Service,
   SiteSettings,
   Testimonial,
@@ -33,9 +34,45 @@ function serializeDate(value: Date | string | null | undefined) {
   return typeof value === "string" ? value : value.toISOString();
 }
 
+function normalizeProjectGalleryItem(item: unknown): ProjectGalleryItem | null {
+  if (typeof item === "string") {
+    return {
+      image: item,
+      description: { en: "", pl: "" },
+    };
+  }
+
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+
+  const image = "image" in item && typeof item.image === "string" ? item.image : "";
+  const description =
+    "description" in item && item.description && typeof item.description === "object"
+      ? item.description
+      : null;
+
+  if (!image) {
+    return null;
+  }
+
+  return {
+    image,
+    description: {
+      en: description && "en" in description && typeof description.en === "string" ? description.en : "",
+      pl: description && "pl" in description && typeof description.pl === "string" ? description.pl : "",
+    },
+  };
+}
+
 function normalizeProject(project: typeof projects.$inferSelect): Project {
   return {
     ...project,
+    gallery: Array.isArray(project.gallery)
+      ? project.gallery
+          .map((item) => normalizeProjectGalleryItem(item))
+          .filter((item): item is ProjectGalleryItem => item !== null)
+      : [],
     repository: project.repository ?? null,
     liveUrl: project.liveUrl ?? null,
     demoUrl: project.demoUrl ?? null,

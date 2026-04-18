@@ -1,7 +1,12 @@
 import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { getServerSession } from "next-auth";
-import { getAdminGitHubLogins } from "@/lib/env";
+import {
+  getAdminGitHubLogins,
+  getDevelopmentAdminEmail,
+  getDevelopmentAdminLogin,
+  isDevelopmentAdminBypassEnabled,
+} from "@/lib/env";
 
 export const authOptions: NextAuthOptions = {
   providers: process.env.GITHUB_ID && process.env.GITHUB_SECRET
@@ -45,6 +50,20 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export function getAuthSession() {
+function getDevelopmentAdminSession() {
+  return {
+    user: {
+      name: "Development Admin",
+      email: getDevelopmentAdminEmail(),
+      login: getDevelopmentAdminLogin(),
+    },
+  };
+}
+
+export async function getAuthSession() {
+  if (isDevelopmentAdminBypassEnabled()) {
+    return getDevelopmentAdminSession();
+  }
+
   return getServerSession(authOptions);
 }

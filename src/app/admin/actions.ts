@@ -9,8 +9,16 @@ import {
   testimonials,
 } from "@/db/schema";
 import { requireDatabase, updateInquiryStatus } from "@/lib/data";
+import { buildGitHubProjectSyncFields } from "@/lib/github";
 import { requireAdmin } from "@/lib/admin";
-import type { BookingProvider, InquiryStatus, LocalizedList, LocalizedText, SocialLink } from "@/lib/types";
+import type {
+  BookingProvider,
+  InquiryStatus,
+  LocalizedList,
+  LocalizedText,
+  ProjectGalleryItem,
+  SocialLink,
+} from "@/lib/types";
 
 function textValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -36,6 +44,35 @@ function parseLines(value: string) {
     .split(/\r?\n/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseProjectGallery(formData: FormData): ProjectGalleryItem[] {
+  const count = numberValue(formData, "galleryCount");
+  const items: ProjectGalleryItem[] = [];
+
+  for (let index = 0; index < count; index += 1) {
+    const image = textValue(formData, `galleryImage-${index}`);
+    const descriptionEn = textValue(formData, `galleryDescriptionEn-${index}`);
+    const descriptionPl = textValue(formData, `galleryDescriptionPl-${index}`);
+
+    if (!image && !descriptionEn && !descriptionPl) {
+      continue;
+    }
+
+    if (!image) {
+      continue;
+    }
+
+    items.push({
+      image,
+      description: {
+        en: descriptionEn,
+        pl: descriptionPl,
+      },
+    });
+  }
+
+  return items;
 }
 
 function localizedText(formData: FormData, prefix: string): LocalizedText {
@@ -72,6 +109,10 @@ export async function saveProjectAction(formData: FormData) {
   await requireAdmin();
   const db = requireDatabase();
   const id = textValue(formData, "id");
+  const repository = textValue(formData, "repository") || null;
+  const liveUrl = textValue(formData, "liveUrl") || null;
+  const demoUrl = textValue(formData, "demoUrl") || null;
+
   const values = {
     slug: textValue(formData, "slug"),
     featured: checkboxValue(formData, "featured"),
@@ -86,16 +127,25 @@ export async function saveProjectAction(formData: FormData) {
     tags: parseCsv(textValue(formData, "tags")),
     stack: parseCsv(textValue(formData, "stack")),
     coverImage: textValue(formData, "coverImage"),
-    gallery: parseLines(textValue(formData, "gallery")),
-    repository: textValue(formData, "repository") || null,
-    liveUrl: textValue(formData, "liveUrl") || null,
-    demoUrl: textValue(formData, "demoUrl") || null,
+    gallery: parseProjectGallery(formData),
+    repository,
+    liveUrl,
+    demoUrl,
   };
 
+  const syncedValues = repository
+    ? await buildGitHubProjectSyncFields(repository, {
+        liveUrl,
+        demoUrl,
+      }).catch(() => null)
+    : null;
+
+  const nextValues = syncedValues ? { ...values, ...syncedValues } : values;
+
   if (id) {
-    await db.update(projects).set(values).where(eq(projects.id, id));
+    await db.update(projects).set(nextValues).where(eq(projects.id, id));
   } else {
-    await db.insert(projects).values(values);
+    await db.insert(projects).values(nextValues);
   }
 
   revalidateAll();

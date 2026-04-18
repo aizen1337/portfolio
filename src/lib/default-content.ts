@@ -88,8 +88,22 @@ export const defaultProjects: Project[] = [
     coverImage:
       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80"
+      {
+        image:
+          "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80",
+        description: {
+          en: "Editorial landing page highlighting the seasonal collection and premium product story.",
+          pl: "Editorialowy landing page pokazujÄ…cy kolekcjÄ™ sezonowÄ… i premium storytelling produktu.",
+        },
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80",
+        description: {
+          en: "Category browsing view built to make product discovery feel faster and more intentional.",
+          pl: "Widok przeglÄ…dania kategorii zaprojektowany tak, by odkrywanie produktĂłw byĹ‚o szybsze i bardziej intencjonalne.",
+        },
+      },
     ],
     repository: "your-handle/atelier-commerce",
     liveUrl: "https://example.com",
@@ -137,8 +151,22 @@ export const defaultProjects: Project[] = [
     coverImage:
       "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
+      {
+        image:
+          "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+        description: {
+          en: "Pipeline dashboard showing lead status, delivery stages, and team-wide visibility.",
+          pl: "Dashboard pipeline'u pokazujÄ…cy status leadĂłw, etapy realizacji i widocznoĹ›Ä‡ dla caĹ‚ego zespoĹ‚u.",
+        },
+      },
+      {
+        image:
+          "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+        description: {
+          en: "Operations workspace designed to reduce handoff friction between sales and delivery.",
+          pl: "Workspace operacyjny zaprojektowany tak, by zmniejszyÄ‡ tarcie przy handoffie miÄ™dzy sprzedaĹĽÄ… a delivery.",
+        },
+      },
     ],
     repository: "your-handle/signal-os",
     liveUrl: null,
@@ -186,7 +214,14 @@ export const defaultProjects: Project[] = [
     coverImage:
       "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80"
+      {
+        image:
+          "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80",
+        description: {
+          en: "Bilingual intake form balancing lead qualification with a warm, lightweight first step.",
+          pl: "DwujÄ™zyczny formularz intake, ktĂłry rĂłwnowaĹĽy kwalifikacjÄ™ leadĂłw z ciepĹ‚ym i lekkim pierwszym krokiem.",
+        },
+      },
     ],
     repository: "your-handle/studio-brief",
     liveUrl: null,

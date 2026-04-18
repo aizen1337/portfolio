@@ -6,6 +6,10 @@ export type LocalizedList = Record<Locale, string[]>;
 export type InquiryStatus = "new" | "replied" | "archived";
 export type InquiryType = "employer" | "client";
 export type BookingProvider = "google-calendar";
+export interface ProjectGalleryItem {
+  image: string;
+  description: LocalizedText;
+}
 
 export interface Project {
   id: string;
@@ -22,7 +26,7 @@ export interface Project {
   tags: string[];
   stack: string[];
   coverImage: string;
-  gallery: string[];
+  gallery: ProjectGalleryItem[];
   repository: string | null;
   liveUrl: string | null;
   demoUrl: string | null;

@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth";
-import { isAuthConfigured } from "@/lib/env";
+import { isAuthConfigured, isDevelopmentAdminBypassEnabled } from "@/lib/env";
 
 export async function requireAdmin() {
-  if (!isAuthConfigured()) {
+  if (!isAuthConfigured() && !isDevelopmentAdminBypassEnabled()) {
     throw new Error("Admin auth is not configured.");
   }
 

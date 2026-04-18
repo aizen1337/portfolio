@@ -15,6 +15,13 @@
       "when": 1776527620684,
       "tag": "0001_booking_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776549600000,
+      "tag": "0002_gallery_descriptions",
+      "breakpoints": true
     }
   ]
 }

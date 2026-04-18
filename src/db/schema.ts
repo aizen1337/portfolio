@@ -13,6 +13,7 @@ import type {
   InquiryType,
   LocalizedList,
   LocalizedText,
+  ProjectGalleryItem,
   SocialLink,
 } from "@/lib/types";
 
@@ -40,7 +41,7 @@ export const projects = pgTable("projects", {
   tags: jsonb("tags").$type<string[]>().notNull(),
   stack: jsonb("stack").$type<string[]>().notNull(),
   coverImage: text("cover_image").notNull(),
-  gallery: jsonb("gallery").$type<string[]>().notNull(),
+  gallery: jsonb("gallery").$type<ProjectGalleryItem[]>().notNull(),
   repository: text("repository"),
   liveUrl: text("live_url"),
   demoUrl: text("demo_url"),

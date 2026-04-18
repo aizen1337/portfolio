@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImageDropInput } from "@/components/admin/image-drop-input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { AdminSignInButton, AdminSignOutButton } from "@/components/admin/auth-buttons";
 import { GitHubSyncButton } from "@/components/admin/github-sync-button";
+import { ProjectGalleryEditor } from "@/components/admin/project-gallery-editor";
 import { UploadPanel } from "@/components/admin/upload-panel";
 import {
   getInquiries,
@@ -19,6 +21,7 @@ import {
 } from "@/lib/data";
 import { getAuthSession } from "@/lib/auth";
 import { isAuthConfigured } from "@/lib/env";
+import type { Project } from "@/lib/types";
 import {
   deleteProjectAction,
   deleteServiceAction,
@@ -100,6 +103,268 @@ function ListPair({
   );
 }
 
+const TAGS_PLACEHOLDER = "Next.js, SaaS, Dashboard";
+const STACK_PLACEHOLDER = "Next.js, TypeScript, Drizzle, Postgres";
+
+function DraftFieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] uppercase tracking-[0.2em] text-primary/80">
+      {children}
+    </p>
+  );
+}
+
+function DraftTextPair({
+  label,
+  name,
+  enDefault = "",
+  plDefault = "",
+  rows = 4,
+  className = "",
+}: {
+  label: string;
+  name: string;
+  enDefault?: string;
+  plDefault?: string;
+  rows?: number;
+  className?: string;
+}) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <div className="space-y-2">
+        <DraftFieldLabel>{label} (EN)</DraftFieldLabel>
+        <Textarea
+          name={`${name}En`}
+          defaultValue={enDefault}
+          rows={rows}
+          className={className}
+        />
+      </div>
+      <div className="space-y-2">
+        <DraftFieldLabel>{label} (PL)</DraftFieldLabel>
+        <Textarea
+          name={`${name}Pl`}
+          defaultValue={plDefault}
+          rows={rows}
+          className={className}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ProjectEditorForm({ project }: { project?: Project }) {
+  const isEditing = Boolean(project);
+  return (
+    <form
+      action={saveProjectAction}
+      className={`space-y-8 rounded-lg border px-4 py-6 sm:px-6 sm:py-8 ${
+        isEditing ? "border-white/10 bg-white/[0.015]" : "border-dashed border-white/10 bg-white/[0.01]"
+      }`}
+    >
+      {project ? <input type="hidden" name="id" value={project.id} /> : null}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">{isEditing ? "Editable Draft" : "New Draft"}</Badge>
+          {project?.featured ? <Badge>Featured</Badge> : null}
+          <span className="text-sm text-muted-foreground">
+            {project?.slug ? `/${project.slug}` : "Unsaved project"}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit">{isEditing ? "Save project" : "Create project"}</Button>
+          {isEditing && project ? (
+            <>
+              <Button type="submit" formAction={deleteProjectAction} variant="outline">
+                Delete
+              </Button>
+              <GitHubSyncButton projectId={project.id} repository={project.repository} />
+            </>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-[1.4fr_0.6fr]">
+          <div className="space-y-2">
+            <DraftFieldLabel>Tags</DraftFieldLabel>
+            <Input
+              name="tags"
+              defaultValue={project?.tags.join(", ") ?? ""}
+              placeholder={TAGS_PLACEHOLDER}
+              className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-2">
+              <DraftFieldLabel>Slug</DraftFieldLabel>
+              <Input
+                name="slug"
+                defaultValue={project?.slug ?? ""}
+                className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <DraftFieldLabel>Sort order</DraftFieldLabel>
+              <Input
+                name="sortOrder"
+                type="number"
+                defaultValue={project?.sortOrder ?? "99"}
+                className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+              />
+            </div>
+            <div className="flex items-end">
+              <label className="flex h-10 w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm">
+                <input
+                  type="checkbox"
+                  name="featured"
+                  defaultChecked={project?.featured ?? false}
+                />
+                Featured
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <DraftTextPair
+          label="Title"
+          name="title"
+          enDefault={project?.title.en}
+          plDefault={project?.title.pl}
+          rows={2}
+          className="min-h-28 border-none bg-transparent px-0 py-0 text-4xl leading-tight font-semibold text-foreground shadow-none focus-visible:ring-0 sm:text-5xl"
+        />
+        <DraftTextPair
+          label="Summary"
+          name="summary"
+          enDefault={project?.summary.en}
+          plDefault={project?.summary.pl}
+          rows={4}
+          className="min-h-28 border-none bg-transparent px-0 py-0 text-lg leading-8 text-muted-foreground shadow-none focus-visible:ring-0"
+        />
+      </div>
+
+      <div className="space-y-3">
+        <DraftFieldLabel>Cover image</DraftFieldLabel>
+        <ImageDropInput
+          name="coverImage"
+          initialValue={project?.coverImage ?? ""}
+          aspectClassName="aspect-[16/9]"
+          emptyLabel="Drop a cover image here or choose a file"
+        />
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <aside className="space-y-6 rounded-lg border border-white/10 bg-white/[0.03] p-6">
+          <div className="space-y-4">
+            <DraftFieldLabel>Role</DraftFieldLabel>
+            <DraftTextPair
+              label="Role"
+              name="role"
+              enDefault={project?.role.en}
+              plDefault={project?.role.pl}
+              rows={4}
+              className="min-h-28 rounded-lg border-white/10 bg-white/[0.02] text-sm leading-7 text-muted-foreground"
+            />
+          </div>
+          <div className="space-y-2">
+            <DraftFieldLabel>Stack</DraftFieldLabel>
+            <Input
+              name="stack"
+              defaultValue={project?.stack.join(", ") ?? ""}
+              placeholder={STACK_PLACEHOLDER}
+              className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+            />
+          </div>
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <DraftFieldLabel>Repository</DraftFieldLabel>
+              <Input
+                name="repository"
+                defaultValue={project?.repository ?? ""}
+                className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <DraftFieldLabel>Live URL</DraftFieldLabel>
+              <Input
+                name="liveUrl"
+                defaultValue={project?.liveUrl ?? ""}
+                className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <DraftFieldLabel>Demo URL</DraftFieldLabel>
+              <Input
+                name="demoUrl"
+                defaultValue={project?.demoUrl ?? ""}
+                className="h-10 rounded-lg border-white/10 bg-white/[0.03] text-sm"
+              />
+            </div>
+          </div>
+        </aside>
+
+        <div className="space-y-8">
+          <section className="space-y-3">
+            <h2 className="text-2xl">Overview</h2>
+            <DraftTextPair
+              label="Overview"
+              name="overview"
+              enDefault={project?.overview.en}
+              plDefault={project?.overview.pl}
+              rows={6}
+              className="min-h-40 border-none bg-transparent px-0 py-0 text-base leading-8 text-muted-foreground shadow-none focus-visible:ring-0"
+            />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-2xl">Challenge</h2>
+            <DraftTextPair
+              label="Challenge"
+              name="challenge"
+              enDefault={project?.challenge.en}
+              plDefault={project?.challenge.pl}
+              rows={6}
+              className="min-h-40 border-none bg-transparent px-0 py-0 text-base leading-8 text-muted-foreground shadow-none focus-visible:ring-0"
+            />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-2xl">Approach</h2>
+            <DraftTextPair
+              label="Approach"
+              name="approach"
+              enDefault={project?.approach.en}
+              plDefault={project?.approach.pl}
+              rows={6}
+              className="min-h-40 border-none bg-transparent px-0 py-0 text-base leading-8 text-muted-foreground shadow-none focus-visible:ring-0"
+            />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-2xl">Outcome</h2>
+            <DraftTextPair
+              label="Outcome"
+              name="outcome"
+              enDefault={project?.outcome.en}
+              plDefault={project?.outcome.pl}
+              rows={6}
+              className="min-h-40 border-none bg-transparent px-0 py-0 text-base leading-8 text-muted-foreground shadow-none focus-visible:ring-0"
+            />
+          </section>
+        </div>
+      </div>
+
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl">Gallery</h2>
+          <p className="text-sm text-muted-foreground">
+            Edit this like the media section of the project page.
+          </p>
+        </div>
+        <ProjectGalleryEditor initialItems={project?.gallery} />
+      </section>
+    </form>
+  );
+}
+
 export default async function AdminPage() {
   const [session, projects, services, testimonials, inquiries, settings, media] =
     await Promise.all([
@@ -162,124 +427,16 @@ export default async function AdminPage() {
         <TabsContent value="projects" className="space-y-6">
           <AdminSection title="Projects" description="Create, update, and sync project case studies.">
             <div className="grid gap-6">
+              <div className="flex justify-end">
+                <GitHubSyncButton syncAll />
+              </div>
               {projects.map((project) => (
-                <form key={project.id} action={saveProjectAction} className="space-y-4 rounded-lg border border-white/10 p-4">
-                  <input type="hidden" name="id" value={project.id} />
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label>Slug</Label>
-                      <Input name="slug" defaultValue={project.slug} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Sort order</Label>
-                      <Input name="sortOrder" type="number" defaultValue={project.sortOrder} />
-                    </div>
-                    <label className="flex items-end gap-2 text-sm">
-                      <input type="checkbox" name="featured" defaultChecked={project.featured} />
-                      Featured
-                    </label>
-                  </div>
-                  <TextPair label="Title" name="title" enDefault={project.title.en} plDefault={project.title.pl} />
-                  <TextPair label="Summary" name="summary" enDefault={project.summary.en} plDefault={project.summary.pl} />
-                  <TextPair label="Overview" name="overview" enDefault={project.overview.en} plDefault={project.overview.pl} />
-                  <TextPair label="Challenge" name="challenge" enDefault={project.challenge.en} plDefault={project.challenge.pl} />
-                  <TextPair label="Approach" name="approach" enDefault={project.approach.en} plDefault={project.approach.pl} />
-                  <TextPair label="Outcome" name="outcome" enDefault={project.outcome.en} plDefault={project.outcome.pl} />
-                  <TextPair label="Role" name="role" enDefault={project.role.en} plDefault={project.role.pl} />
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label>Tags (comma separated)</Label>
-                      <Input name="tags" defaultValue={project.tags.join(", ")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Stack (comma separated)</Label>
-                      <Input name="stack" defaultValue={project.stack.join(", ")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Cover image URL</Label>
-                      <Input name="coverImage" defaultValue={project.coverImage} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Repository</Label>
-                      <Input name="repository" defaultValue={project.repository ?? ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Live URL</Label>
-                      <Input name="liveUrl" defaultValue={project.liveUrl ?? ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Demo URL</Label>
-                      <Input name="demoUrl" defaultValue={project.demoUrl ?? ""} />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Gallery URLs (one per line)</Label>
-                    <Textarea name="gallery" defaultValue={project.gallery.join("\n")} rows={4} />
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    <Button type="submit">Save project</Button>
-                    <Button type="submit" formAction={deleteProjectAction} variant="outline">
-                      Delete
-                    </Button>
-                    <GitHubSyncButton projectId={project.id} repository={project.repository} />
-                  </div>
-                </form>
+                <ProjectEditorForm key={project.id} project={project} />
               ))}
-              <form action={saveProjectAction} className="space-y-4 rounded-lg border border-dashed border-white/10 p-4">
+              <div className="space-y-4">
                 <h3 className="text-lg">New project</h3>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label>Slug</Label>
-                    <Input name="slug" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Sort order</Label>
-                    <Input name="sortOrder" type="number" defaultValue="99" />
-                  </div>
-                  <label className="flex items-end gap-2 text-sm">
-                    <input type="checkbox" name="featured" />
-                    Featured
-                  </label>
-                </div>
-                <TextPair label="Title" name="title" />
-                <TextPair label="Summary" name="summary" />
-                <TextPair label="Overview" name="overview" />
-                <TextPair label="Challenge" name="challenge" />
-                <TextPair label="Approach" name="approach" />
-                <TextPair label="Outcome" name="outcome" />
-                <TextPair label="Role" name="role" />
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Tags</Label>
-                    <Input name="tags" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Stack</Label>
-                    <Input name="stack" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Cover image</Label>
-                    <Input name="coverImage" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Repository</Label>
-                    <Input name="repository" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Live URL</Label>
-                    <Input name="liveUrl" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Demo URL</Label>
-                    <Input name="demoUrl" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Gallery URLs</Label>
-                  <Textarea name="gallery" rows={4} />
-                </div>
-                <Button type="submit">Create project</Button>
-              </form>
+                <ProjectEditorForm />
+              </div>
             </div>
           </AdminSection>
         </TabsContent>

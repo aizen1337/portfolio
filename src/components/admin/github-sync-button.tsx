@@ -2,20 +2,24 @@
 
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function GitHubSyncButton({
   projectId,
   repository,
+  syncAll = false,
 }: {
-  projectId: string;
-  repository: string | null;
+  projectId?: string;
+  repository?: string | null;
+  syncAll?: boolean;
 }) {
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleClick() {
-    if (!repository) {
+    if (!syncAll && !repository) {
       toast.error("Add a repository first, e.g. owner/name.");
       return;
     }
@@ -26,7 +30,7 @@ export function GitHubSyncButton({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ projectId, repository }),
+      body: JSON.stringify(syncAll ? { syncAll: true } : { projectId, repository }),
     });
     setIsPending(false);
 
@@ -36,7 +40,22 @@ export function GitHubSyncButton({
       return;
     }
 
-    toast.success("GitHub metadata synced.");
+    const payload = (await response.json().catch(() => null)) as {
+      synced?: number;
+      failed?: number;
+    } | null;
+    if (syncAll) {
+      const synced = payload?.synced ?? 0;
+      const failed = payload?.failed ?? 0;
+      toast.success(
+        failed > 0
+          ? `Synced ${synced} repos. ${failed} failed.`
+          : `Synced ${synced} GitHub repositories.`
+      );
+    } else {
+      toast.success("GitHub metadata synced.");
+    }
+    router.refresh();
   }
 
   return (
@@ -48,7 +67,7 @@ export function GitHubSyncButton({
       disabled={isPending}
     >
       <RefreshCw className={`size-4 ${isPending ? "animate-spin" : ""}`} />
-      Sync GitHub
+      {syncAll ? "Sync all repos" : "Sync GitHub"}
     </Button>
   );
 }
