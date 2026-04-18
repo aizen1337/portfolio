@@ -18,6 +18,10 @@
     "language": "Language",
     "loading": "Loading..."
   },
+  "footer": {
+    "tagline": "Built to speak to employers and clients without becoming two different people.",
+    "contact": "Contact"
+  },
   "contact": {
     "title": "Start the conversation",
     "description": "Share what you're hiring for or what you're building. I will get back to you with a thoughtful next step.",

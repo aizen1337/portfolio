@@ -18,6 +18,10 @@
     "language": "Język",
     "loading": "Ładowanie..."
   },
+  "footer": {
+    "tagline": "Stworzone tak, by rozmawiać z pracodawcami i klientami bez udawania dwóch różnych osób.",
+    "contact": "Kontakt"
+  },
   "contact": {
     "title": "Zacznijmy rozmowę",
     "description": "Napisz, kogo szukasz albo co chcesz zbudować. Odpowiem z konkretną propozycją kolejnego kroku.",

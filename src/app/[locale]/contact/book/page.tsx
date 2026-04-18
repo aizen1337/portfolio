@@ -18,7 +18,6 @@ export default async function ContactBookingPage({
   const settings = await getSiteSettings();
   const hasBooking = hasBookingConfig(settings);
   const externalUrl = getBookingExternalUrl(settings.bookingUrl);
-  const contactPath = `/${locale}/contact`;
 
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-4 py-20 sm:px-6 lg:grid lg:grid-cols-[0.8fr_1.2fr] lg:gap-10 lg:space-y-0 lg:px-8">
@@ -34,7 +33,7 @@ export default async function ContactBookingPage({
             <p>{hasBooking ? t("bookingHint") : t("bookingFallback")}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline">
-                <Link href={contactPath}>
+                <Link href="/contact" locale={locale}>
                   {t("bookingBack")}
                 </Link>
               </Button>
