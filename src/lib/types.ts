@@ -5,6 +5,7 @@ export type LocalizedText = Record<Locale, string>;
 export type LocalizedList = Record<Locale, string[]>;
 export type InquiryStatus = "new" | "replied" | "archived";
 export type InquiryType = "employer" | "client";
+export type BookingProvider = "google-calendar";
 
 export interface Project {
   id: string;
@@ -80,7 +81,9 @@ export interface SiteSettings {
   contactIntro: LocalizedText;
   socialLinks: SocialLink[];
   contactEmail: string;
-  calendlyUrl: string | null;
+  bookingEnabled: boolean;
+  bookingProvider: BookingProvider;
+  bookingUrl: string | null;
   resumeUrl: string | null;
 }
 

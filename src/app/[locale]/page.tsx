@@ -2,7 +2,6 @@ import Image from "next/image";
 import { ArrowRight, BriefcaseBusiness, Download, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { GlowingCardPreview } from "@/components/glowing-card-preview";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Spotlight } from "@/components/ui/spotlight";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +30,6 @@ export default async function LocaleHomePage({
     <div className="relative overflow-hidden">
       <section className="relative isolate">
         <Spotlight className="-top-48 left-0 md:-top-32 md:left-60" fill="#5eead4" />
-        <BackgroundBeams className="opacity-30" />
         <div className="mx-auto grid min-h-[82svh] max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-8">
           <div className="space-y-8">
             <Badge className="rounded-full bg-primary/15 text-primary hover:bg-primary/15">
@@ -73,6 +71,8 @@ export default async function LocaleHomePage({
                     src={featuredProjects[0]?.coverImage ?? "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80"}
                     alt={featuredProjects[0] ? getLocalizedText(featuredProjects[0].title, locale) : "Project preview"}
                     fill
+                    sizes="(max-width: 639px) 100vw, 50vw"
+                    loading="eager"
                     className="object-cover"
                   />
                 </div>
@@ -95,7 +95,7 @@ export default async function LocaleHomePage({
                   {getLocalizedText(settings.aboutBody, locale)}
                 </p>
               </div>
-              <GlowingCardPreview />
+              <GlowingCardPreview locale={locale} />
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">
@@ -138,6 +138,7 @@ export default async function LocaleHomePage({
                   src={project.coverImage}
                   alt={getLocalizedText(project.title, locale)}
                   fill
+                  sizes="(max-width: 1023px) 100vw, 33vw"
                   className="object-cover"
                 />
               </div>

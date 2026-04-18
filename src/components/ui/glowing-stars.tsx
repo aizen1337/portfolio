@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import React, { useState } from "react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export const GlowingStarsBackgroundCard = ({
@@ -22,7 +22,7 @@ export const GlowingStarsBackgroundCard = ({
         setMouseEnter(false);
       }}
       className={cn(
-        "bg-[linear-gradient(110deg,#333_0.6%,#222)] p-4 max-w-md max-h-[20rem] h-full w-full rounded-xl border border-[#eaeaea] dark:border-neutral-600",
+        "bg-[linear-gradient(110deg,#333_0.6%,#222)] max-w-md w-full rounded-xl border border-[#eaeaea] p-4 overflow-hidden dark:border-neutral-600",
         className
       )}
     >
@@ -66,21 +66,6 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
   const stars = 108;
   const columns = 18;
 
-  const [glowingStars, setGlowingStars] = useState<number[]>([]);
-
-  const highlightedStars = useRef<number[]>([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      highlightedStars.current = Array.from({ length: 5 }, () =>
-        Math.floor(Math.random() * stars)
-      );
-      setGlowingStars([...highlightedStars.current]);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div
       className="h-48 p-1 w-full"
@@ -91,22 +76,20 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
       }}
     >
       {[...Array(stars)].map((_, starIdx) => {
-        const isGlowing = glowingStars.includes(starIdx);
-        const delay = (starIdx % 10) * 0.1;
-        const staticDelay = starIdx * 0.01;
+        const delay = starIdx * 0.01;
         return (
           <div
             key={`matrix-col-${starIdx}}`}
             className="relative flex items-center justify-center"
           >
-            <Star
-              isGlowing={mouseEnter ? true : isGlowing}
-              delay={mouseEnter ? staticDelay : delay}
-            />
-            {mouseEnter && <Glow delay={staticDelay} />}
-            <AnimatePresence mode="wait">
-              {isGlowing && <Glow delay={delay} />}
-            </AnimatePresence>
+            {mouseEnter ? (
+              <>
+                <AnimatedStar delay={delay} />
+                <Glow delay={delay} />
+              </>
+            ) : (
+              <div className="relative z-20 h-[1px] w-[1px] rounded-full bg-[#666]" />
+            )}
           </div>
         );
       })}
@@ -114,7 +97,7 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
   );
 };
 
-const Star = ({ isGlowing, delay }: { isGlowing: boolean; delay: number }) => {
+const AnimatedStar = ({ delay }: { delay: number }) => {
   return (
     <motion.div
       key={delay}
@@ -122,8 +105,8 @@ const Star = ({ isGlowing, delay }: { isGlowing: boolean; delay: number }) => {
         scale: 1,
       }}
       animate={{
-        scale: isGlowing ? [1, 1.2, 2.5, 2.2, 1.5] : 1,
-        background: isGlowing ? "#fff" : "#666",
+        scale: [1, 1.2, 2.5, 2.2, 1.5],
+        background: "#fff",
       }}
       transition={{
         duration: 2,

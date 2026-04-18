@@ -8,6 +8,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import type {
+  BookingProvider,
   InquiryStatus,
   InquiryType,
   LocalizedList,
@@ -96,7 +97,9 @@ export const siteSettings = pgTable("site_settings", {
   contactIntro: jsonb("contact_intro").$type<LocalizedText>().notNull(),
   socialLinks: jsonb("social_links").$type<SocialLink[]>().notNull(),
   contactEmail: text("contact_email").notNull(),
-  calendlyUrl: text("calendly_url"),
+  bookingEnabled: boolean("booking_enabled").default(true).notNull(),
+  bookingProvider: text("booking_provider").$type<BookingProvider>().default("google-calendar").notNull(),
+  bookingUrl: text("booking_url"),
   resumeUrl: text("resume_url"),
   ...timestamps,
 });

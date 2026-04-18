@@ -10,7 +10,7 @@ import {
 } from "@/db/schema";
 import { requireDatabase, updateInquiryStatus } from "@/lib/data";
 import { requireAdmin } from "@/lib/admin";
-import type { InquiryStatus, LocalizedList, LocalizedText, SocialLink } from "@/lib/types";
+import type { BookingProvider, InquiryStatus, LocalizedList, LocalizedText, SocialLink } from "@/lib/types";
 
 function textValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -59,11 +59,13 @@ function revalidateAll() {
   revalidatePath("/en/services");
   revalidatePath("/en/employers");
   revalidatePath("/en/contact");
+  revalidatePath("/en/contact/book");
   revalidatePath("/pl");
   revalidatePath("/pl/projects");
   revalidatePath("/pl/services");
   revalidatePath("/pl/employers");
   revalidatePath("/pl/contact");
+  revalidatePath("/pl/contact/book");
 }
 
 export async function saveProjectAction(formData: FormData) {
@@ -185,7 +187,9 @@ export async function saveSettingsAction(formData: FormData) {
       return { label, href } satisfies SocialLink;
     }),
     contactEmail: textValue(formData, "contactEmail"),
-    calendlyUrl: textValue(formData, "calendlyUrl") || null,
+    bookingEnabled: checkboxValue(formData, "bookingEnabled"),
+    bookingProvider: "google-calendar" as BookingProvider,
+    bookingUrl: textValue(formData, "bookingUrl") || null,
     resumeUrl: textValue(formData, "resumeUrl") || null,
   };
 

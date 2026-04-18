@@ -18,6 +18,7 @@ import {
 } from "@/lib/default-content";
 import { isDatabaseConfigured } from "@/lib/env";
 import type {
+  BookingProvider,
   Inquiry,
   InquiryStatus,
   MediaAsset,
@@ -81,9 +82,15 @@ function normalizeSiteSettings(
 ): SiteSettings {
   return {
     ...settings,
-    calendlyUrl: settings.calendlyUrl ?? null,
+    bookingEnabled: settings.bookingEnabled,
+    bookingProvider: normalizeBookingProvider(settings.bookingProvider),
+    bookingUrl: settings.bookingUrl ?? null,
     resumeUrl: settings.resumeUrl ?? null,
   };
+}
+
+function normalizeBookingProvider(value: string | null | undefined): BookingProvider {
+  return value === "google-calendar" ? "google-calendar" : "google-calendar";
 }
 
 export async function getPortfolioData() {
@@ -102,11 +109,15 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return defaultSiteSettings;
   }
 
-  const row = await getDb().query.siteSettings.findFirst({
-    where: eq(siteSettings.id, "main"),
-  });
+  try {
+    const row = await getDb().query.siteSettings.findFirst({
+      where: eq(siteSettings.id, "main"),
+    });
 
-  return row ? normalizeSiteSettings(row) : defaultSiteSettings;
+    return row ? normalizeSiteSettings(row) : defaultSiteSettings;
+  } catch {
+    return defaultSiteSettings;
+  }
 }
 
 export async function getProjects(): Promise<Project[]> {

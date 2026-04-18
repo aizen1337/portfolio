@@ -11,6 +11,7 @@
     "featured": "Wybrane",
     "viewCaseStudy": "Zobacz case study",
     "allProjects": "Wszystkie projekty",
+    "letTalk": "Porozmawiajmy",
     "bookCall": "Umów rozmowę",
     "sendInquiry": "Wyślij zapytanie",
     "resume": "CV",
@@ -28,12 +29,19 @@
     "budgetRange": "Budżet",
     "timeline": "Termin",
     "wantsCall": "Chcę umówić rozmowę",
+    "bookNow": "Umów rozmowę teraz",
     "employer": "Zapytanie rekrutacyjne",
     "client": "Zapytanie klienta",
     "submit": "Wyślij wiadomość",
     "success": "Dzięki. Wiadomość została wysłana i odezwę się wkrótce.",
     "error": "Nie udało się teraz wysłać formularza. Spróbuj ponownie za chwilę.",
-    "callCta": "Wybierz termin w kalendarzu"
+    "callCta": "Wybierz termin w kalendarzu",
+    "bookingHint": "Wolisz od razu porozmawiać na żywo? Przejdź do strony rezerwacji i wybierz dogodny termin.",
+    "bookingTitle": "Umów rozmowę",
+    "bookingDescription": "Wybierz termin, który Ci pasuje, a spotkamy się wtedy online.",
+    "bookingFallback": "Rezerwacja nie jest jeszcze skonfigurowana. Wyślij formularz albo napisz maila, a zaproponuję kilka terminów.",
+    "bookingBack": "Wróć do kontaktu",
+    "bookingExternal": "Otwórz rezerwację w nowej karcie"
   },
   "admin": {
     "title": "CMS portfolio",

@@ -34,8 +34,10 @@ async function NavLinks({ locale }: { locale: Locale }) {
 }
 
 export async function SiteHeader({ locale }: { locale: Locale }) {
+  const t = await getTranslations({ locale, namespace: "common" });
+
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-background/95">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link locale={locale} href="/" className="text-sm font-semibold tracking-tight">
           MK / Portfolio
@@ -47,7 +49,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <LocaleSwitcher />
           <Button asChild size="sm">
             <Link href="/contact" locale={locale}>
-              Let&apos;s talk
+              {t("letTalk")}
             </Link>
           </Button>
         </div>
@@ -65,7 +67,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 <LocaleSwitcher />
                 <Button asChild>
                   <Link href="/contact" locale={locale}>
-                    Let&apos;s talk
+                    {t("letTalk")}
                   </Link>
                 </Button>
               </div>

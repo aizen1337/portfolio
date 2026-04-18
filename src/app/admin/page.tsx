@@ -378,12 +378,23 @@ export default async function AdminPage() {
                   <Input name="contactEmail" defaultValue={settings.contactEmail} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Calendly URL</Label>
-                  <Input name="calendlyUrl" defaultValue={settings.calendlyUrl ?? ""} />
+                  <Label>Booking integration</Label>
+                  <Input value="Google Calendar appointment schedule" readOnly />
+                  <input type="hidden" name="bookingProvider" value="google-calendar" />
                 </div>
                 <div className="space-y-2">
                   <Label>Resume URL</Label>
                   <Input name="resumeUrl" defaultValue={settings.resumeUrl ?? ""} />
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-end">
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" name="bookingEnabled" defaultChecked={settings.bookingEnabled} />
+                  Booking enabled
+                </label>
+                <div className="space-y-2">
+                  <Label>Google Calendar booking URL</Label>
+                  <Input name="bookingUrl" defaultValue={settings.bookingUrl ?? ""} />
                 </div>
               </div>
               <div className="space-y-2">

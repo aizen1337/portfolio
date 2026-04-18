@@ -3,15 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@/i18n/navigation";
+import { getBookingPath, hasBookingConfig } from "@/lib/booking";
 import type { Locale } from "@/lib/types";
 import {
   contactFormSchema,
@@ -21,10 +22,12 @@ import {
 
 export function ContactForm({
   locale,
-  calendlyUrl,
+  bookingEnabled,
+  bookingUrl,
 }: {
   locale: Locale;
-  calendlyUrl: string | null;
+  bookingEnabled: boolean;
+  bookingUrl: string | null;
 }) {
   const t = useTranslations("contact");
   const [submitted, setSubmitted] = useState(false);
@@ -45,10 +48,8 @@ export function ContactForm({
       turnstileToken: "",
     },
   });
-  const wantsCall = useWatch({
-    control: form.control,
-    name: "wantsCall",
-  });
+  const bookingPath = getBookingPath();
+  const showBookingCta = hasBookingConfig({ bookingEnabled, bookingUrl });
 
   const onSubmit = form.handleSubmit(async (values) => {
     const response = await fetch("/api/contact", {
@@ -90,13 +91,11 @@ export function ContactForm({
           <p className="text-sm text-muted-foreground">
             {locale === "en"
               ? "I typically reply with the best next step, a few clarifying questions, or a booking suggestion."
-              : "Zwykle odpisuję z najlepszym kolejnym krokiem, kilkoma pytaniami doprecyzowującymi albo propozycją rozmowy."}
+              : "Zwykle odpisuje z najlepszym kolejnym krokiem, kilkoma pytaniami doprecyzowujacymi albo propozycja rozmowy."}
           </p>
-          {calendlyUrl ? (
+          {showBookingCta ? (
             <Button asChild>
-              <a href={calendlyUrl} target="_blank" rel="noreferrer">
-                {t("callCta")}
-              </a>
+              <Link href={bookingPath}>{t("callCta")}</Link>
             </Button>
           ) : null}
         </CardContent>
@@ -157,13 +156,14 @@ export function ContactForm({
         <Label>{t("message")}</Label>
         <Textarea rows={7} {...form.register("message")} />
       </div>
-      <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm">
-        <Checkbox
-          checked={wantsCall}
-          onCheckedChange={(checked) => form.setValue("wantsCall", Boolean(checked))}
-        />
-        <span>{t("wantsCall")}</span>
-      </label>
+      {showBookingCta ? (
+        <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">{t("bookingHint")}</p>
+          <Button asChild variant="outline">
+            <Link href={bookingPath}>{t("bookNow")}</Link>
+          </Button>
+        </div>
+      ) : null}
       <Button type="submit" disabled={form.formState.isSubmitting}>
         {form.formState.isSubmitting ? "Sending..." : t("submit")}
       </Button>

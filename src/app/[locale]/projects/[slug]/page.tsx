@@ -40,6 +40,7 @@ export default async function ProjectDetailPage({
           src={project.coverImage}
           alt={getLocalizedText(project.title, locale)}
           fill
+          sizes="100vw"
           className="object-cover"
         />
       </div>
@@ -115,6 +116,7 @@ export default async function ProjectDetailPage({
               src={image}
               alt={getLocalizedText(project.title, locale)}
               fill
+              sizes="(max-width: 767px) 100vw, 50vw"
               className="object-cover"
             />
           </div>

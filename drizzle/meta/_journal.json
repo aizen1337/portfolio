@@ -8,6 +8,13 @@
       "when": 1776455550493,
       "tag": "0000_typical_hedge_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776527620684,
+      "tag": "0001_booking_settings",
+      "breakpoints": true
     }
   ]
 }

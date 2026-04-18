@@ -11,6 +11,7 @@
     "featured": "Featured",
     "viewCaseStudy": "View case study",
     "allProjects": "All projects",
+    "letTalk": "Let's talk",
     "bookCall": "Book a call",
     "sendInquiry": "Send inquiry",
     "resume": "Resume",
@@ -28,12 +29,19 @@
     "budgetRange": "Budget range",
     "timeline": "Timeline",
     "wantsCall": "I'd like to book a call",
+    "bookNow": "Book a call now",
     "employer": "Employer inquiry",
     "client": "Client inquiry",
     "submit": "Send message",
     "success": "Thanks. Your message is in and I'll follow up soon.",
     "error": "I couldn't submit the form right now. Please try again in a moment.",
-    "callCta": "Pick a time on the calendar"
+    "callCta": "Pick a time on the calendar",
+    "bookingHint": "Prefer a live conversation? You can go straight to the booking page and choose a slot there.",
+    "bookingTitle": "Book a call",
+    "bookingDescription": "Pick a time that works and I'll meet you there.",
+    "bookingFallback": "Booking is not configured yet. Send the form or email me directly and I'll suggest a few times.",
+    "bookingBack": "Back to contact",
+    "bookingExternal": "Open booking in a new tab"
   },
   "admin": {
     "title": "Portfolio CMS",

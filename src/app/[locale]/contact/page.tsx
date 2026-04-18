@@ -34,7 +34,11 @@ export default async function ContactPage({
       </div>
       <Card className="border-white/10 bg-white/[0.03]">
         <CardContent className="p-6">
-          <ContactForm locale={locale} calendlyUrl={settings.calendlyUrl} />
+          <ContactForm
+            locale={locale}
+            bookingEnabled={settings.bookingEnabled}
+            bookingUrl={settings.bookingUrl}
+          />
         </CardContent>
       </Card>
     </div>

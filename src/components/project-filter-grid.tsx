@@ -61,6 +61,7 @@ export function ProjectFilterGrid({
                 src={project.coverImage}
                 alt={getLocalizedText(project.title, locale)}
                 fill
+                sizes="(max-width: 1023px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>

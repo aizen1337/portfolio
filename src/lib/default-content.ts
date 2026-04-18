@@ -43,7 +43,9 @@ export const defaultSiteSettings: SiteSettings = {
     { label: "Email", href: "mailto:hello@example.com" },
   ],
   contactEmail: "hello@example.com",
-  calendlyUrl: "https://calendly.com/your-handle/intro-call",
+  bookingEnabled: true,
+  bookingProvider: "google-calendar",
+  bookingUrl: "https://calendar.google.com/calendar/appointments/schedules/your-booking-page",
   resumeUrl: null,
 };
 
